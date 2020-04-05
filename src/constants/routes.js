@@ -1,7 +1,13 @@
-export const LANDING = '/';
-export const SIGN_UP = '/signup';
-export const SIGN_IN = '/signin';
-export const HOME = '/home';
-export const ACCOUNT = '/account';
-export const ADMIN = '/admin';
-export const PASSWORD_FORGET = '/pw-forget';
+import React from "react";
+import Card from "../views/card"
+import CustomerList from "../views/CustomerList"
+
+
+const routes = [
+  { name: "Join", path: "/", exact: true, main: () => <div>join</div> },
+  { name: "Card", path: "/card", exact: true, main: () => <Card /> },
+  { name: "CustomerList", path: "/customer_list", exact: true, main: () => <CustomerList /> },
+  { name: "Home", path: "/home", exact: true, main: () => <Card/> }
+];
+
+export default routes;
