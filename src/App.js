@@ -34,6 +34,7 @@ import InboxIcon from '@material-ui/icons/MoveToInbox';
 import MailIcon from '@material-ui/icons/Mail';
 import PeopleIcon from '@material-ui/icons/People';
 import ErrorIcon from '@material-ui/icons/Error';
+import HomeIcon from '@material-ui/icons/Home';
 
 
 import routes from "./constants/routes";
@@ -284,6 +285,17 @@ function App() {
 
 
         <MenuList>
+
+        <Link to="/" className={classes.MenuLink} underline>
+          <MenuItem  >
+          <ListItemIcon>
+            <HomeIcon  />
+          </ListItemIcon>
+          <Typography variant="inherit" className={classes.MenuLink}>Home</Typography>
+          </MenuItem>
+          </Link>
+
+
         <Link to="/customer_list" className={classes.MenuLink} underline>
           <MenuItem  >
           <ListItemIcon>
