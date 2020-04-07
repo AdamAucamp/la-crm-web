@@ -11,16 +11,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Build
+
     - uses: actions/setup-node@master
       with:
         node-version: '12.x'
     - uses: actions/checkout@master
-    - name: Install
+
     - uses: borales/actions-yarn@master
       with:
         cmd: install # will run `yarn install` command
-    - name: Build
+
     - uses: borales/actions-yarn@master
       with:
         cmd: build # will run `yarn build` command
@@ -33,11 +33,11 @@ jobs:
         REACT_APP_MESSAGING_SENDER_ID: ${{ secrets.REACT_APP_MESSAGING_SENDER_ID }}
         REACT_APP_APP_ID: ${{ secrets.REACT_APP_APP_ID }}
         REACT_APP_MEASUREMENT_ID: ${{ secrets.REACT_APP_MEASUREMENT_ID }}
-    - name: Test
+
     - uses: borales/actions-yarn@master
       with:
         cmd: test # will run `yarn test` command:  
-    - name: Deploy
+
     - uses: w9jds/firebase-action@master
       with:
         args: deploy --only hosting
