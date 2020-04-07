@@ -101,7 +101,11 @@ export default function MaterialTableDemo() {
     <div>
     <FirestoreProvider {...config} firebase={firebase}>
       <FirestoreCollection path="/customers/" >
+
+
         {d => {return d.isLoading ? "Loading" : <pre> 
+
+        {d.value!=null?
 
         <MaterialTable
       icons={tableIcons}
@@ -164,7 +168,7 @@ export default function MaterialTableDemo() {
             }, 600);
           }),
       }}
-    /> </pre>;}}
+    /> :<div>you dont seem to be authorised for this... </div> } </pre>;}}
 </FirestoreCollection>
  </FirestoreProvider>  
     </div>
