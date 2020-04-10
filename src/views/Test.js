@@ -12,7 +12,7 @@ import Button from '@material-ui/core/Button';
 import Divider from '@material-ui/core/Divider';
 
 import logo from './../logo.svg';
-import { Counter } from './../features/counter/Counter';
+import { Counter } from '../features/counter/Counter';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -49,7 +49,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function DetailedExpansionPanel() {
+export default function Test() {
   const classes = useStyles();
 
   return (

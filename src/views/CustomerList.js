@@ -21,14 +21,7 @@ import ViewColumn from '@material-ui/icons/ViewColumn';
 import firebase from 'firebase';
 
 import "firebase/auth";
-import { FirestoreProvider, FirestoreCollection, FirestoreDocument, FirestoreMutation } from "@react-firebase/firestore";
-import {
-  FirebaseAuthProvider,
-  FirebaseAuthConsumer,
-  IfFirebaseAuthed,
-  IfFirebaseAuthedAnd
-} from "@react-firebase/auth";
-import * as firebaseui from 'firebaseui'
+import { FirestoreProvider, FirestoreCollection} from "@react-firebase/firestore";
 import { config } from "./../firebase";
 
 
