@@ -11,6 +11,9 @@ import Chip from '@material-ui/core/Chip';
 import Button from '@material-ui/core/Button';
 import Divider from '@material-ui/core/Divider';
 
+import logo from './../logo.svg';
+import { Counter } from './../features/counter/Counter';
+
 const useStyles = makeStyles((theme) => ({
   root: {
     width: '100%',
@@ -87,6 +90,15 @@ export default function DetailedExpansionPanel() {
           </Button>
         </ExpansionPanelActions>
       </ExpansionPanel>
+
+
+      <header className="App-header">
+        <img src={logo} className="App-logo" alt="logo" />
+        <Counter />
+      </header>
+
+
+
     </div>
   );
 }
