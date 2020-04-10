@@ -1,4 +1,7 @@
 ![Main Pipeline](https://github.com/AdamAucamp/la-crm-web/workflows/Main%20Pipeline/badge.svg?branch=master)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/3d1bd59822a64037823d00097d954110)](https://www.codacy.com/manual/AdamAucamp/la-crm-web?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=AdamAucamp/la-crm-web&amp;utm_campaign=Badge_Grade)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=AdamAucamp_la-crm-web&metric=alert_status)](https://sonarcloud.io/dashboard?id=AdamAucamp_la-crm-web)
+
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
