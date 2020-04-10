@@ -1,10 +1,10 @@
-import React from "react";
+import React from 'react';
 import {
   BrowserRouter as Router,
   Switch,
   Route,
   useHistory
-} from "react-router-dom";
+} from 'react-router-dom';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
@@ -30,12 +30,12 @@ import './App.css';
 
 import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
 import firebase from 'firebase';
-import "firebase/auth";
+import 'firebase/auth';
 import {
   FirebaseAuthProvider,
   FirebaseAuthConsumer,
-} from "@react-firebase/auth";
-import { config } from "./firebase";
+} from '@react-firebase/auth';
+import { config } from './firebase';
 
 
 const drawerWidth = 240;
