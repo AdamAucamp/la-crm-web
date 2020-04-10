@@ -8,8 +8,6 @@ import {
   useHistory 
 } from "react-router-dom";
 
-import Link2 from '@material-ui/core/Link';
-
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
@@ -18,7 +16,6 @@ import { makeStyles, useTheme } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
-import List from '@material-ui/core/List';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
@@ -27,16 +24,12 @@ import MenuIcon from '@material-ui/icons/Menu';
 import MenuList from '@material-ui/core/MenuList';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import InboxIcon from '@material-ui/icons/MoveToInbox';
-import MailIcon from '@material-ui/icons/Mail';
 import PeopleIcon from '@material-ui/icons/People';
 import ErrorIcon from '@material-ui/icons/Error';
 import HomeIcon from '@material-ui/icons/Home';
-
-
+import logo from './logo.svg';
+import { Counter } from './features/counter/Counter';
 import routes from "./constants/routes";
 import './App.css';
 
@@ -56,6 +49,7 @@ import { config } from "./firebase";
 
 
 const drawerWidth = 240;
+
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -132,23 +126,18 @@ const useStyles = makeStyles((theme) => ({
 
 // Configure FirebaseUI.
 const uiConfig = {
-  // Popup signin flow rather than redirect flow.
   signInFlow: 'popup',
-  // Redirect to /signedIn after sign in is successful. Alternatively you can provide a callbacks.signInSuccess function.
-  //signInSuccessUrl: '/home',
-  // We will display Google and Facebook as auth providers.
   signInOptions: [
     firebase.auth.EmailAuthProvider.PROVIDER_ID,
-    //firebase.auth.GoogleAuthProvider.PROVIDER_ID,
   ],
   callbacks: {
-    // Avoid redirects after sign-in.
     signInSuccessWithAuthResult: () => false
   }
 };
 
 
 function App() {
+
 
   
   const theme = useTheme();  
@@ -188,16 +177,13 @@ function App() {
   };
 
 
-  
- 
+
 
 
   return (
     <div className="App">
       <Router>
-        <FirebaseAuthProvider firebase={firebase} {...config}>
-
-
+      <FirebaseAuthProvider firebase={firebase} {...config}>
       <div className={classes.root}>
       <CssBaseline />
       <AppBar
@@ -257,9 +243,11 @@ function App() {
                   </Menu>
                 </div>) : (<div>not singed in </div>)} </div>)}} 
           </FirebaseAuthConsumer>
-
         </Toolbar>
       </AppBar>
+      
+
+            
       <Drawer
         variant="permanent"
         className={clsx(classes.drawer, {
@@ -281,12 +269,8 @@ function App() {
         </div>
         <Divider />
         
-
-
-
         <MenuList>
-
-        <Link to="/" className={classes.MenuLink} underline>
+        <Link to="/" className={classes.MenuLink} >
           <MenuItem  >
           <ListItemIcon>
             <HomeIcon  />
@@ -295,8 +279,7 @@ function App() {
           </MenuItem>
           </Link>
 
-
-        <Link to="/customer_list" className={classes.MenuLink} underline>
+        <Link to="/customer_list" className={classes.MenuLink} >
           <MenuItem  >
           <ListItemIcon>
             <PeopleIcon  />
@@ -305,7 +288,7 @@ function App() {
           </MenuItem>
           </Link>
 
-                  <Link to="/card" className={classes.MenuLink} underline>
+          <Link to="/card" className={classes.MenuLink} >
           <MenuItem  >
           <ListItemIcon>
             <ErrorIcon  />
@@ -314,12 +297,13 @@ function App() {
           </MenuItem>
           </Link>
 
-
         </MenuList>
 
         <Divider />
-
       </Drawer>
+      
+      
+            
       <main className={classes.content}>
         <div className={classes.toolbar} />
           <FirebaseAuthConsumer>
@@ -349,31 +333,68 @@ function App() {
             }}
           </FirebaseAuthConsumer>
       </main>
-    </div>
 
 
 
-
-
-
-          {/* <FirebaseAuthConsumer>
-            {({ isSignedIn, user, providerId }) => {
-              return (
-                <pre style={{ height: 300, overflow: "auto" }}>
-                  {JSON.stringify({ isSignedIn, user, providerId }, null, 2)}
-                </pre>
-              );
-            }}
-          </FirebaseAuthConsumer> */}
-
-
-        </FirebaseAuthProvider>
+       
+      </div>
+      </FirebaseAuthProvider>
       </Router>
+
+
+
+
+      <header className="App-header">
+        <img src={logo} className="App-logo" alt="logo" />
+        <Counter />
+        <p>
+          Edit <code>src/App.js</code> and save to reload.
+        </p>
+        <span>
+          <span>Learn </span>
+          <a
+            className="App-link"
+            href="https://reactjs.org/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            React
+          </a>
+          <span>, </span>
+          <a
+            className="App-link"
+            href="https://redux.js.org/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Redux
+          </a>
+          <span>, </span>
+          <a
+            className="App-link"
+            href="https://redux-toolkit.js.org/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Redux Toolkit
+          </a>
+          ,<span> and </span>
+          <a
+            className="App-link"
+            href="https://react-redux.js.org/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            React Redux
+          </a>
+        </span>
+      </header>
+    
+    
+    
+    
     </div>
   );
 }
 
 export default App;
-
-
-

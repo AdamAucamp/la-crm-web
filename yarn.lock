@@ -9660,14 +9660,6 @@ react-transition-group@^4.0.0, react-transition-group@^4.3.0:
     object-assign "^4.1.1"
     prop-types "^15.6.2"
 
-reactfire@^2.0.3:
-  version "2.0.3"
-  resolved "https://registry.yarnpkg.com/reactfire/-/reactfire-2.0.3.tgz#5e791d786768d0134dc416ac912a5134c00d90ff"
-  integrity sha512-9QH2iUUPo5QUe8NJtKotBCztxDB7vGWfa7ldsWc9XswZ24YfDcLDZRdjjzb44BLqjqopNxK1ysrsQ08fuDS21w==
-  dependencies:
-    rxfire "^3.6.3"
-    rxjs "^6.4.0"
-
 read-pkg-up@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/read-pkg-up/-/read-pkg-up-2.0.0.tgz#6b72a8048984e0c41e79510fd5e9fa99b3b549be"
@@ -10113,20 +10105,6 @@ run-queue@^1.0.0, run-queue@^1.0.3:
   integrity sha1-6Eg5bwV9Ij8kOGkkYY4laUFh7Ec=
   dependencies:
     aproba "^1.1.1"
-
-rxfire@^3.6.3:
-  version "3.11.2"
-  resolved "https://registry.yarnpkg.com/rxfire/-/rxfire-3.11.2.tgz#1974005b0eff0c486bb472c4378c322ca18610e8"
-  integrity sha512-hWVL1It7GloqXbuRNNGTmzXdc5+pCfe09Bq3Ojn9D6yd+KYdNDf8gwttmwkb9fGajhHRpaTGTNOSQRYE24n29Q==
-  dependencies:
-    tslib "1.11.1"
-
-rxjs@^6.4.0:
-  version "6.5.5"
-  resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-6.5.5.tgz#c5c884e3094c8cfee31bf27eb87e54ccfc87f9ec"
-  integrity sha512-WfQI+1gohdf0Dai/Bbmk5L5ItH5tYqm3ki2c5GdWhKjalzjg93N3avFjVStyZZz+A2Em+ZxKH5bNghw9UeylGQ==
-  dependencies:
-    tslib "^1.9.0"
 
 rxjs@^6.5.3:
   version "6.5.4"
