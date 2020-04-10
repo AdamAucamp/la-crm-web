@@ -3,11 +3,13 @@ name: Main Pipeline
 
 on:
   push:
-    branches: [ master ]
+  #  branches: [ master ]
+    tags:        
+      - v*
 
 jobs:
   build:
-    name: build
+    name: Build|Test|Deploy
     runs-on: ubuntu-latest
 
     steps:
