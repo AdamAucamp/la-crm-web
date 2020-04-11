@@ -286,21 +286,9 @@ function App() {
               </FirebaseAuthConsumer>
             </main>
 
-
-
-
           </div>
         </FirebaseAuthProvider>
       </Router>
-
-
-
-
-
-
-
-
-
     </div>
   );
 }
