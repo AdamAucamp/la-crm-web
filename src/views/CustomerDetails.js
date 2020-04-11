@@ -9,8 +9,20 @@ import TextField from '@material-ui/core/TextField';
 import Grid from '@material-ui/core/Grid';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import SaveIcon from '@material-ui/icons/Save';
+import Fab from '@material-ui/core/Fab';
+import Checkbox from '@material-ui/core/Checkbox';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import Paper from '@material-ui/core/Paper';
+import DateFnsUtils from '@date-io/date-fns';
+import {
+    MuiPickersUtilsProvider,
+    KeyboardTimePicker,
+    KeyboardDatePicker,
+} from '@material-ui/pickers';
 
 import firebase from 'firebase';
+import { Divider } from '@material-ui/core';
 
 
 
@@ -21,6 +33,19 @@ const useStyles = makeStyles((theme) => ({
     },
     button: {
         margin: theme.spacing(1),
+    },
+    extendedIcon: {
+        marginRight: theme.spacing(1),
+    },
+    fab: {
+        position: 'fixed',
+        bottom: theme.spacing(2),
+        right: theme.spacing(2),
+    },
+    paper: {
+        padding: theme.spacing(2),
+        textAlign: 'center',
+        color: theme.palette.text.secondary,
     },
 }));
 
@@ -83,11 +108,13 @@ export default function CustomerDetails() {
 
     if (!gotDB) {
         setGotDB(true)
-        
+
         firebase.firestore().collection("customers").doc(id).get().then(function (doc) {
             if (doc.exists) {
                 console.log("Document data:", doc.data());
                 setState(doc.data())
+
+
             } else {
                 // doc.data() will be undefined in this case
                 console.log("No such document!");
@@ -104,46 +131,158 @@ export default function CustomerDetails() {
 
 
 
-
-
-
-
-
-
     return (
         <div>
 
             {state != null ? <div>
-                <Grid container spacing={1} alignItems="flex-end">
-                    <Grid item>
-                        <AccountCircle />
+
+                <Grid container >
+                    <Grid container spacing={3}>
+
+                        <Grid item xs={12} md={6} lg={4}>
+                            <TextField
+                                label="Name" value={state.name}
+                                variant="outlined"
+                                fullWidth
+                                onChange={(e) => updateState("name", e.target.value)}
+                                InputProps={{
+                                    startAdornment: (
+                                        <InputAdornment position="start">
+                                            <AccountCircle />
+                                        </InputAdornment>
+                                    ),
+                                }} />
+                        </Grid>
+                        <Grid item xs={12} md={6} lg={4}>
+                            <TextField
+                                label="Surname"
+                                variant="outlined"
+                                fullWidth
+                                value={state.surname} onChange={(e) => updateState("surname", e.target.value)}
+                                InputProps={{
+                                    startAdornment: (
+                                        <InputAdornment position="start">
+                                            <AccountCircle />
+                                        </InputAdornment>
+                                    ),
+                                }} />
+                        </Grid>
+                        <Grid item xs={12} md={6} lg={4}>
+                            <TextField
+                                label="Bussiness Name"
+                                variant="outlined"
+                                fullWidth
+                                value={state.bussiness} onChange={(e) => updateState("bussiness", e.target.value)}
+                                InputProps={{
+                                    startAdornment: (
+                                        <InputAdornment position="start">
+                                            <AccountCircle />
+                                        </InputAdornment>
+                                    ),
+                                }} />
+                        </Grid>
+                        <Grid item xs={12} md={6} lg={4}>
+                            <TextField
+                                label="Email"
+                                variant="outlined"
+                                fullWidth
+                                value={state.email} onChange={(e) => updateState("email", e.target.value)}
+                                InputProps={{
+                                    startAdornment: (
+                                        <InputAdornment position="start">
+                                            <AccountCircle />
+                                        </InputAdornment>
+                                    ),
+                                }} />
+                        </Grid>
+                        <Grid item xs={12} md={6} lg={4}>
+                            <TextField
+                                label="Phone"
+                                variant="outlined"
+                                fullWidth
+                                type="number"
+                                value={state.phone} onChange={(e) => updateState("phone", e.target.value)}
+                                InputProps={{
+                                    startAdornment: (
+                                        <InputAdornment position="start">
+                                            <AccountCircle />
+                                        </InputAdornment>
+                                    ),
+                                }} />
+                        </Grid>
+
+                        <Grid item xs={12} md={6} lg={4}>
+                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                <KeyboardDatePicker
+                                    label="Date Last Contacted"
+                                    variant="outlined"
+                                    fullWidth
+                                    format="dd/MM/yyyy"
+                                    value={new Date(state.date)}
+                                    onChange={(e) => { updateState("date", e.getTime()) }}
+                                    KeyboardButtonProps={{
+                                        'aria-label': 'change date',
+                                    }}
+                                />
+                            </MuiPickersUtilsProvider>
+                        </Grid>
+
+
+
+
+
+                        <Grid item xs={6} md={3} lg={2}>
+                            <FormControlLabel
+                                control={
+                                    <Checkbox
+                                        checked={state.followup}
+                                        onChange={(e) => updateState("followup", !state.followup)}
+                                        name="checkedB"
+                                        color="primary"
+                                    />
+                                }
+                                label="Should Follow Up"
+                            />
+                        </Grid>
+
+                        <Grid item xs={12} md={6} lg={4}>
+
+                            <Paper className={classes.paper}>item</Paper>
+                        </Grid>
+
                     </Grid>
-                    <Grid item>
-                        <TextField label="Name" value={state.name} onChange={(e) => updateState("name", e.target.value)} />
+                    
+
+                    <Grid container item spacing={3} style={{ paddingTop: 20 }} >
+                        <Grid item xs={12} md={6} >
+                            <TextField
+                                label="Note"
+                                multiline
+                                rows={10}
+                                value={state.note}
+                                onChange={(e) => updateState("note", e.target.value)}
+                                variant="outlined"
+                                fullWidth
+                            />
+                        </Grid>
                     </Grid>
+
                 </Grid>
 
-                <Grid container spacing={1} alignItems="flex-end">
-                    <Grid item>
-                        <AccountCircle />
-                    </Grid>
-                    <Grid item>
-                        <TextField label="Surname" value={state.surname} onChange={(e) => updateState("surname", e.target.value)} />
-                    </Grid>
-                </Grid>
 
 
-                <Button
-                    variant="contained"
-                    color="primary"
-                    size="large"
-                    disabled={!edited}
-                    className={classes.button}
-                    startIcon={<SaveIcon />}
-                    onClick={() => { UpdateCustomer(id, state); setEdited(false) }}
-                >
+
+
+
+
+
+
+
+
+                <Fab variant="extended" color="primary" className={classes.fab} disabled={!edited} onClick={() => { UpdateCustomer(id, state); setEdited(false) }}>
+                    <SaveIcon className={classes.extendedIcon} />
                     Save
-                </Button>
+                </Fab>
 
 
             </div> : <div>state-null</div>}
