@@ -124,11 +124,14 @@ const uiConfig = {
 };
 
 
+
+
+
 function App() {
 
   const theme = useTheme();
   const classes = useStyles();
-
+  
 
   const [drawerOpen, setDrawerOpen] = React.useState(false);
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -216,6 +219,7 @@ function App() {
                           onClose={handleClose}
                         >
                           <ProfileButton />
+                         
                           {/* <MenuItem onClick={handleClose}>Profile</MenuItem> */}
                           <MenuItem onClick={handleSignoutClose}>Sign Out</MenuItem>
                         </Menu>
@@ -286,21 +290,9 @@ function App() {
               </FirebaseAuthConsumer>
             </main>
 
-
-
-
           </div>
         </FirebaseAuthProvider>
       </Router>
-
-
-
-
-
-
-
-
-
     </div>
   );
 }
