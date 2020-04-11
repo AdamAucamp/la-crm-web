@@ -7,6 +7,8 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 ## Available Scripts
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/4e99db82a5b946afa0e3ec405764cc9d)](https://app.codacy.com/manual/AdamAucamp/la-crm-web?utm_source=github.com&utm_medium=referral&utm_content=AdamAucamp/la-crm-web&utm_campaign=Badge_Grade_Settings)
+
 In the project directory, you can run:
 
 ### `yarn start`
