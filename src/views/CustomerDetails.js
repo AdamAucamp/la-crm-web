@@ -4,7 +4,6 @@ import {
 } from "react-router-dom";
 
 import { makeStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Grid from '@material-ui/core/Grid';
 import AccountCircle from '@material-ui/icons/AccountCircle';
@@ -17,14 +16,10 @@ import Paper from '@material-ui/core/Paper';
 import DateFnsUtils from '@date-io/date-fns';
 import {
     MuiPickersUtilsProvider,
-    KeyboardTimePicker,
     KeyboardDatePicker,
 } from '@material-ui/pickers';
 
 import firebase from 'firebase';
-import { Divider } from '@material-ui/core';
-
-
 
 
 const useStyles = makeStyles((theme) => ({
@@ -67,7 +62,8 @@ const useStyles = makeStyles((theme) => ({
 // }
 
 function UpdateCustomer(id, data) {
-    firebase.firestore().collection('customers').doc(id).set(data).then(() => {
+    let path = "users/" + firebase.auth().currentUser.uid + "/customers"
+    firebase.firestore().collection(path).doc(id).set(data).then(() => {
         console.log("Document successfully updated!");
     }).catch((error) => {
         console.error("Error updating document: ", error);
@@ -94,6 +90,7 @@ export default function CustomerDetails() {
     const classes = useStyles();
 
     const [state, setState] = React.useState(null);
+    
     const [gotDB, setGotDB] = React.useState(false);
     const [edited, setEdited] = React.useState(false);
 
@@ -109,7 +106,9 @@ export default function CustomerDetails() {
     if (!gotDB) {
         setGotDB(true)
 
-        firebase.firestore().collection("customers").doc(id).get().then(function (doc) {
+        let path = "users/" + firebase.auth().currentUser.uid + "/customers"
+
+        firebase.firestore().collection(path).doc(id).get().then(function (doc) {
             if (doc.exists) {
                 console.log("Document data:", doc.data());
                 setState(doc.data())
@@ -231,7 +230,7 @@ export default function CustomerDetails() {
 
 
 
-                        <Grid item xs={6} md={3} lg={2}>
+                        <Grid item xs={6} md={3} lg={2} >
                             <FormControlLabel
                                 control={
                                     <Checkbox

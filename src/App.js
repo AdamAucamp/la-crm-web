@@ -6,6 +6,8 @@ import {
   useHistory
 } from 'react-router-dom';
 import AccountCircle from '@material-ui/icons/AccountCircle';
+import Button from '@material-ui/core/Button';
+import Tooltip from '@material-ui/core/Tooltip';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
 import clsx from 'clsx';
@@ -25,6 +27,7 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import PeopleIcon from '@material-ui/icons/People';
 import ErrorIcon from '@material-ui/icons/Error';
 import HomeIcon from '@material-ui/icons/Home';
+import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import routes from "./constants/routes";
 import './App.css';
 
@@ -109,6 +112,11 @@ const useStyles = makeStyles((theme) => ({
     textDecoration: "none",
     color: "#888888"
   },
+  profile: {
+    position: 'fixed',
+    bottom: theme.spacing(2),
+    right: theme.spacing(2),
+  },
 }));
 
 
@@ -131,7 +139,7 @@ function App() {
 
   const theme = useTheme();
   const classes = useStyles();
-  
+
 
   const [drawerOpen, setDrawerOpen] = React.useState(false);
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -186,46 +194,11 @@ function App() {
                 </IconButton>
 
                 <Typography variant="h6" noWrap className={classes.title}>
-                  CRM APP THING
+                  Simple CRM
                 </Typography>
 
-                <FirebaseAuthConsumer>
-                  {({ isSignedIn }) => {
-                    return (<div>
-                      {isSignedIn ? (<div>
-                        {firebase.auth().currentUser.email}
-                        <IconButton
-                          aria-label="account of current user"
-                          aria-controls="menu-appbar"
-                          aria-haspopup="true"
-                          onClick={handleMenu}
-                          color="inherit"
-                        >
-                          <AccountCircle />
-                        </IconButton>
-                        <Menu
-                          id="menu-appbar"
-                          anchorEl={anchorEl}
-                          anchorOrigin={{
-                            vertical: 'top',
-                            horizontal: 'right',
-                          }}
-                          keepMounted
-                          transformOrigin={{
-                            vertical: 'top',
-                            horizontal: 'right',
-                          }}
-                          open={open}
-                          onClose={handleClose}
-                        >
-                          <ProfileButton />
-                         
-                          {/* <MenuItem onClick={handleClose}>Profile</MenuItem> */}
-                          <MenuItem onClick={handleSignoutClose}>Sign Out</MenuItem>
-                        </Menu>
-                      </div>) : (<div>not singed in </div>)} </div>)
-                  }}
-                </FirebaseAuthConsumer>
+                <ProfileButton />
+
               </Toolbar>
             </AppBar>
 
@@ -303,14 +276,58 @@ export default App;
 
 
 function ProfileButton() {
+  const theme = useTheme();
+  const classes = useStyles();
+
+  const handleSignout = () => {
+    firebase.auth().signOut()
+  };
+
   let history = useHistory();
 
-  function handleClick() {
-    history.push("/profile");
+  function Navigate(nav) {
+    history.push(nav);
   }
 
+
   return (
-    <MenuItem onClick={handleClick}>Profile</MenuItem>
+    <FirebaseAuthConsumer>{({ isSignedIn }) => {
+
+      if (isSignedIn) {
+        return (<div>
+          <Tooltip title="Profile" arrow>
+            <Button color="inherit" onClick={() => Navigate("/profile")}>
+              {firebase.auth().currentUser.email}</Button>
+          </Tooltip>
+          <Tooltip title="Sign Out" arrow>
+            <IconButton
+              aria-label="account of current user"
+              aria-controls="menu-appbar"
+              aria-haspopup="true"
+              onClick={handleSignout}
+              color="inherit"
+            >
+              <ExitToAppIcon />
+            </IconButton>
+          </Tooltip>
+
+        </div>)
+      } else {
+        return (<div>
+          <Tooltip title="Sign In" arrow>
+            <IconButton
+              aria-label="account of current user"
+              aria-controls="menu-appbar"
+              aria-haspopup="true"
+              onClick={() => Navigate("/")}
+              color="inherit"
+            >
+              <AccountCircle />
+            </IconButton>
+          </Tooltip>
+        </div>)
+      }
+    }}</FirebaseAuthConsumer>
   );
 }
 
@@ -323,24 +340,24 @@ function DrawerMenu() {
 
   return (
     <MenuList>
-      <MenuItem onClick={() => handleClick("/")} >
-        <ListItemIcon>
-          <HomeIcon />
-        </ListItemIcon>
-        <Typography variant="inherit"  >Home</Typography>
-      </MenuItem>
-      <MenuItem onClick={() => handleClick("/customer_list")} >
-        <ListItemIcon>
-          <PeopleIcon />
-        </ListItemIcon>
-        <Typography variant="inherit"  >Customer List</Typography>
-      </MenuItem>
-      <MenuItem onClick={() => handleClick("/card")} >
-        <ListItemIcon>
-          <ErrorIcon />
-        </ListItemIcon>
-        <Typography variant="inherit"  >Test</Typography>
-      </MenuItem>
-    </MenuList>
+    <MenuItem onClick={() => handleClick("/")} >
+      <ListItemIcon>
+        <HomeIcon />
+      </ListItemIcon>
+      <Typography variant="inherit"  >Home</Typography>
+    </MenuItem>
+    <MenuItem onClick={() => handleClick("/customer_list")} >
+      <ListItemIcon>
+        <PeopleIcon />
+      </ListItemIcon>
+      <Typography variant="inherit"  >Customer List</Typography>
+    </MenuItem>
+    <MenuItem onClick={() => handleClick("/test")} >
+      <ListItemIcon>
+        <ErrorIcon />
+      </ListItemIcon>
+      <Typography variant="inherit"  >Test</Typography>
+    </MenuItem>
+  </MenuList>
   );
 }
