@@ -54,10 +54,8 @@ export default function Home() {
 
   if (!gotDB) {
     setGotDB(true)
-    console.log("doing this")
 
     let path = "users/" + firebase.auth().currentUser.uid + "/customers"
-
     firebase.firestore().collection(path).where("followup", "==", true).get().then(function (querySnapshot) {
       let data = []
       querySnapshot.forEach(function (doc) {
@@ -67,7 +65,6 @@ export default function Home() {
         data.push(elem)
       });
       setState({ ...state, "data": data })
-
     });
   }
 

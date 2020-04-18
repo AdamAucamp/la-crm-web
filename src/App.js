@@ -28,6 +28,7 @@ import PeopleIcon from '@material-ui/icons/People';
 import ErrorIcon from '@material-ui/icons/Error';
 import HomeIcon from '@material-ui/icons/Home';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
+import SettingsIcon from '@material-ui/icons/Settings';
 import routes from "./constants/routes";
 import './App.css';
 
@@ -352,6 +353,13 @@ function DrawerMenu() {
       </ListItemIcon>
       <Typography variant="inherit"  >Customer List</Typography>
     </MenuItem>
+    <MenuItem onClick={() => handleClick("/settings")} >
+      <ListItemIcon>
+        <SettingsIcon />
+      </ListItemIcon>
+      <Typography variant="inherit"  >Settings</Typography>
+    </MenuItem>
+    
     <MenuItem onClick={() => handleClick("/test")} >
       <ListItemIcon>
         <ErrorIcon />

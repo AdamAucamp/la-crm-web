@@ -20,6 +20,14 @@ import {
 } from '@material-ui/pickers';
 
 import firebase from 'firebase';
+import { Tooltip } from '@material-ui/core';
+
+import Stepper from '@material-ui/core/Stepper';
+import Step from '@material-ui/core/Step';
+import StepLabel from '@material-ui/core/StepLabel';
+import StepContent from '@material-ui/core/StepContent';
+import Button from '@material-ui/core/Button';
+import Typography from '@material-ui/core/Typography';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -42,6 +50,12 @@ const useStyles = makeStyles((theme) => ({
         textAlign: 'center',
         color: theme.palette.text.secondary,
     },
+    actionsContainer: {
+        marginBottom: theme.spacing(2),
+    },
+    resetContainer: {
+        padding: theme.spacing(3),
+    },
 }));
 
 // function deleteCustomer(id) {
@@ -62,6 +76,15 @@ const useStyles = makeStyles((theme) => ({
 // }
 
 function UpdateCustomer(id, data) {
+    let path = "users/" + firebase.auth().currentUser.uid + "/customers"
+    firebase.firestore().collection(path).doc(id).set(data, { merge: true }).then(() => {
+        console.log("Document successfully updated!");
+    }).catch((error) => {
+        console.error("Error updating document: ", error);
+    });
+}
+
+function UpdateCustomerField(id, field, data) {
     let path = "users/" + firebase.auth().currentUser.uid + "/customers"
     firebase.firestore().collection(path).doc(id).set(data).then(() => {
         console.log("Document successfully updated!");
@@ -90,9 +113,25 @@ export default function CustomerDetails() {
     const classes = useStyles();
 
     const [state, setState] = React.useState(null);
+
     
+    const [render, setRender] = React.useState(true);
+    function doRender(){
+        setRender(!render)
+    }
+
+
+
     const [gotDB, setGotDB] = React.useState(false);
     const [edited, setEdited] = React.useState(false);
+    const [activeTask, setActiveTask] = React.useState(0);
+
+
+
+    const handleStep = (step) => () => {
+        setActiveTask(step);
+        console.log("step ",step)
+    };
 
 
     const updateState = (prop, value) => {
@@ -100,6 +139,22 @@ export default function CustomerDetails() {
         console.log(prop, value)
         setEdited(true)
     }
+
+    const updateTask = (field,value,i)=>{
+        let tempState = state
+
+        tempState.tasks[i][field] = value
+        setState(tempState)
+        console.log(field, value)
+        setEdited(true)
+        doRender()
+
+    }
+
+
+
+
+
 
     let { id } = useParams()
 
@@ -111,7 +166,43 @@ export default function CustomerDetails() {
         firebase.firestore().collection(path).doc(id).get().then(function (doc) {
             if (doc.exists) {
                 console.log("Document data:", doc.data());
-                setState(doc.data())
+
+                let tempState = doc.data()
+                if (tempState.tasks == null) {
+
+                    console.log("no tasks set, getting settings")
+
+                    firebase.firestore().collection("users").doc(firebase.auth().currentUser.uid).get().then(function (user) {
+                        if (doc.exists) {
+                            console.log("Document data:", user.data());
+
+                            let tasks = []
+
+                            user.data().settings.tasks.map((name) => {
+                                tasks.push({ name: name, state: false, note: "", modified: new Date().getTime() })
+                            })
+
+
+
+
+                            tempState.tasks = tasks
+
+                            setState(tempState)
+
+                        } else {
+                            // doc.data() will be undefined in this case
+                            console.log("No such document!");
+                        }
+                    }).catch(function (error) {
+                        console.log("Error getting document:", error);
+                    });
+
+
+
+                } else {
+                    setState(tempState)
+                }
+
 
 
             } else {
@@ -211,22 +302,37 @@ export default function CustomerDetails() {
                         </Grid>
 
                         <Grid item xs={12} md={6} lg={4}>
-                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                            {/* <MuiPickersUtilsProvider utils={DateFnsUtils} variant="outlined">
                                 <KeyboardDatePicker
                                     label="Date Last Contacted"
                                     variant="outlined"
                                     fullWidth
-                                    format="dd/MM/yyyy"
+                                   
+                                    
                                     value={new Date(state.date)}
                                     onChange={(e) => { updateState("date", e.getTime()) }}
                                     KeyboardButtonProps={{
                                         'aria-label': 'change date',
                                     }}
                                 />
-                            </MuiPickersUtilsProvider>
+                            </MuiPickersUtilsProvider> */}
+
+                            <form className={classes.container} noValidate>
+                                <TextField
+                                    type="datetime-local"
+                                    label="Date Last Contacted"
+                                    variant="outlined"
+                                    fullWidth
+
+                                    value={dateString(state.date)}
+                                    onChange={(e) => { updateState("date", new Date(e.target.value).getTime()) }}
+                                    className={classes.textField}
+                                    InputLabelProps={{
+                                        shrink: true,
+                                    }}
+                                />
+                            </form>
                         </Grid>
-
-
 
 
 
@@ -246,13 +352,41 @@ export default function CustomerDetails() {
 
                         <Grid item xs={12} md={6} lg={4}>
 
-                            <Paper className={classes.paper}>item</Paper>
+                            <Paper className={classes.paper}>Mandaat gestuur, nda gestuur,  nda terugontvang, finansiele inligting gestuur, </Paper>
                         </Grid>
 
-                    </Grid>
-                    
+                        <Grid item xs={12} md={6} lg={6}>
+                            {/* <Tooltip title={"Last Updated - " + (state.tick != null ? new Date(state.tick.date).toDateString() : "none")} arrow>
+                                <FormControlLabel
+                                    control={
+                                        <Checkbox
+                                            checked={state.tick != null ? state.tick.state : false}
+                                            onChange={(e) => updateState("tick", { state: e.target.checked, date: new Date().getTime(), note: (state.tick != null ? state.tick.note : "") })}
+                                            name="checkedB"
+                                            color="primary"
+                                        />
+                                    }
+                                    label="TICK"
+                                />
+                            </Tooltip>
 
-                    <Grid container item spacing={3} style={{ paddingTop: 20 }} >
+                            <TextField
+                                label="Note"
+                                multiline
+                                rows={5}
+                                value={state.tick != null ? state.tick.note : ""}
+                                onChange={(e) => updateState("tick", { state: (state.tick != null ? state.tick.state : false), date: new Date().getTime(), note: e.target.value })}
+                                variant="outlined"
+                                fullWidth
+                            /> */}
+                        </Grid>
+
+
+
+                    </Grid>
+
+
+                    {/* <Grid container item spacing={3} style={{ paddingTop: 20 }} >
                         <Grid item xs={12} md={6} >
                             <TextField
                                 label="Note"
@@ -264,7 +398,100 @@ export default function CustomerDetails() {
                                 fullWidth
                             />
                         </Grid>
-                    </Grid>
+                    </Grid> */}
+
+                    {state.tasks != null &&
+
+                        <Grid container item spacing={3} style={{ paddingTop: 20 }} >
+                            <Grid item xs={12}  >
+
+                                {JSON.stringify(state.tasks)}
+
+                                <Stepper activeStep={activeTask} orientation="vertical">
+                                    {state.tasks.map((task, index) => (
+                                        <Step
+                                            key={index}
+                                           
+                                            completed={task.state}>
+                                            <StepLabel >
+                                                <Grid item xs={12} md={6} lg={4} onClick={handleStep(index)}>
+                                                    <TextField
+                                                        label="Title"
+                                                        // variant="outlined"
+                                                        fullWidth
+                                                        value={task.name}
+                                                        onChange={(e) => updateTask("name", e.target.value,index)} />
+                                                </Grid>
+
+                                                {/* {task.name} */}
+
+                                            </StepLabel>
+                                            <StepContent>
+                                                {/* <Typography>{task.name}</Typography> */}
+
+
+                                                <Tooltip title={"Last Updated - " + (task.state != null ? new Date(task.modified).toDateString() : "none")} arrow>
+                                                    <FormControlLabel
+                                                        control={
+                                                            <Checkbox
+                                                                checked={task.state}
+                                                                onChange={(e) => updateTask("state",e.target.checked,index)}
+                                                                name="Completed"
+                                                                color="primary"
+                                                            />
+                                                        }
+                                                        label="Completed"
+                                                    />
+                                                </Tooltip>
+
+                                                <TextField
+                                                    label="Note"
+                                                    multiline
+                                                    rows={5}
+                                                    value={task.note}
+                                                    onChange={(e)=>updateTask("note",e.target.value,index)}
+                                                    variant="outlined"
+                                                    fullWidth
+                                                />
+
+
+
+
+                                                <div className={classes.actionsContainer}>
+                                                    <div>
+                                                        <Button
+                                                            disabled={activeTask === 0}
+                                                            onClick={handleStep(index-1)}
+                                                            className={classes.button}
+                                                        >
+                                                            Back
+                                                    </Button>
+                                                        <Button
+                                                            variant="contained"
+                                                            color="primary"
+                                                            onClick={handleStep(index+1)}
+                                                            className={classes.button}
+                                                        >
+                                                            {activeTask === state.tasks.length - 1 ? 'Finish' : 'Next'}
+                                                        </Button>
+                                                    </div>
+                                                </div>
+                                            </StepContent>
+                                        </Step>
+                                    ))}
+                                </Stepper>
+
+                            </Grid>
+                        </Grid>}
+
+
+
+
+
+
+
+
+
 
                 </Grid>
 
@@ -287,4 +514,22 @@ export default function CustomerDetails() {
             </div> : <div>state-null</div>}
         </div>
     );
+}
+
+
+
+
+
+function dateString(param) {
+    var m = new Date(param);
+    var dateString =
+        m.getUTCFullYear() + "-" +
+        ("0" + (m.getUTCMonth() + 1)).slice(-2) + "-" +
+        ("0" + m.getUTCDate()).slice(-2) + "T" +
+        ("0" + m.getUTCHours()).slice(-2) + ":" +
+        ("0" + m.getUTCMinutes()).slice(-2) + ":" +
+        ("0" + m.getUTCSeconds()).slice(-2);
+
+    return dateString
+
 }
