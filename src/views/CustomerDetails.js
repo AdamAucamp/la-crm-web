@@ -7,6 +7,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Grid from '@material-ui/core/Grid';
 import AccountCircle from '@material-ui/icons/AccountCircle';
+import AddCircleIcon from '@material-ui/icons/AddCircle';
+import EditIcon from '@material-ui/icons/Edit';
 import SaveIcon from '@material-ui/icons/Save';
 import Fab from '@material-ui/core/Fab';
 import Checkbox from '@material-ui/core/Checkbox';
@@ -20,7 +22,7 @@ import {
 } from '@material-ui/pickers';
 
 import firebase from 'firebase';
-import { Tooltip } from '@material-ui/core';
+import { Tooltip, IconButton } from '@material-ui/core';
 
 import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
@@ -114,23 +116,27 @@ export default function CustomerDetails() {
 
     const [state, setState] = React.useState(null);
 
-    
+
     const [render, setRender] = React.useState(true);
-    function doRender(){
+    function doRender() {
         setRender(!render)
     }
-
-
 
     const [gotDB, setGotDB] = React.useState(false);
     const [edited, setEdited] = React.useState(false);
     const [activeTask, setActiveTask] = React.useState(0);
 
+    const [newTaskName, setNewTaskName] = React.useState("");
+
+
+    const updateNewTaskName = (name) => {
+        setNewTaskName(name);
+    };
 
 
     const handleStep = (step) => () => {
         setActiveTask(step);
-        console.log("step ",step)
+        console.log("step ", step)
     };
 
 
@@ -140,15 +146,28 @@ export default function CustomerDetails() {
         setEdited(true)
     }
 
-    const updateTask = (field,value,i)=>{
+    const updateTask = (field, value, i) => {
         let tempState = state
 
         tempState.tasks[i][field] = value
+        tempState.tasks[i]['modified'] = new Date().getTime()
+
         setState(tempState)
         console.log(field, value)
         setEdited(true)
         doRender()
 
+    }
+    const addToTaskList = (name) => {
+
+        let tempState = state
+
+        tempState.tasks.push({ name: name, state: false, note: "", modified: new Date().getTime() })
+
+        setState(tempState)
+        console.log("new Task", name)
+        setEdited(true)
+        //doRender()
     }
 
 
@@ -317,7 +336,7 @@ export default function CustomerDetails() {
                                 />
                             </MuiPickersUtilsProvider> */}
 
-                            <form className={classes.container} noValidate>
+                            {/* <form className={classes.container} noValidate>
                                 <TextField
                                     type="datetime-local"
                                     label="Date Last Contacted"
@@ -331,7 +350,7 @@ export default function CustomerDetails() {
                                         shrink: true,
                                     }}
                                 />
-                            </form>
+                            </form> */}
                         </Grid>
 
 
@@ -411,16 +430,40 @@ export default function CustomerDetails() {
                                     {state.tasks.map((task, index) => (
                                         <Step
                                             key={index}
-                                           
+
                                             completed={task.state}>
                                             <StepLabel >
-                                                <Grid item xs={12} md={6} lg={4} onClick={handleStep(index)}>
-                                                    <TextField
-                                                        label="Title"
-                                                        // variant="outlined"
-                                                        fullWidth
-                                                        value={task.name}
-                                                        onChange={(e) => updateTask("name", e.target.value,index)} />
+                                                <Grid container onClick={handleStep(index)} alignItems="flex-end">
+
+                                                    <Grid item xs={12} md={6} >
+                                                        <TextField
+                                                            label="Title"
+                                                            // variant="outlined"
+                                                            fullWidth
+                                                            value={task.name}
+                                                            onChange={(e) => updateTask("name", e.target.value, index)}
+                                                            InputProps={{
+                                                                endAdornment: (
+                                                                    <InputAdornment position="end">
+                                                                        <Tooltip title={"Event Status: " + (task.state ? "Complete" : "Incomplete")} arrow>
+                                                                            <Checkbox
+                                                                                checked={task.state}
+                                                                                onChange={(e) => updateTask("state", e.target.checked, index)}
+                                                                                name="Completed"
+                                                                                color="primary"
+                                                                            />
+                                                                        </Tooltip>
+                                                                    </InputAdornment>
+                                                                ),
+                                                            }}
+                                                        />
+                                                    </Grid>
+                                                    <Grid item xs={12} md={6} >
+                                                        <Typography variant="overline" display="block" >
+                                                            Last Updated - {new Date(task.modified).toUTCString()}
+                                                        </Typography>
+
+                                                    </Grid>
                                                 </Grid>
 
                                                 {/* {task.name} */}
@@ -429,27 +472,27 @@ export default function CustomerDetails() {
                                             <StepContent>
                                                 {/* <Typography>{task.name}</Typography> */}
 
-
+{/* 
                                                 <Tooltip title={"Last Updated - " + (task.state != null ? new Date(task.modified).toDateString() : "none")} arrow>
                                                     <FormControlLabel
                                                         control={
                                                             <Checkbox
                                                                 checked={task.state}
-                                                                onChange={(e) => updateTask("state",e.target.checked,index)}
+                                                                onChange={(e) => updateTask("state", e.target.checked, index)}
                                                                 name="Completed"
                                                                 color="primary"
                                                             />
                                                         }
                                                         label="Completed"
                                                     />
-                                                </Tooltip>
+                                                </Tooltip> */}
 
                                                 <TextField
                                                     label="Note"
                                                     multiline
                                                     rows={5}
                                                     value={task.note}
-                                                    onChange={(e)=>updateTask("note",e.target.value,index)}
+                                                    onChange={(e) => updateTask("note", e.target.value, index)}
                                                     variant="outlined"
                                                     fullWidth
                                                 />
@@ -461,7 +504,7 @@ export default function CustomerDetails() {
                                                     <div>
                                                         <Button
                                                             disabled={activeTask === 0}
-                                                            onClick={handleStep(index-1)}
+                                                            onClick={handleStep(index - 1)}
                                                             className={classes.button}
                                                         >
                                                             Back
@@ -469,7 +512,7 @@ export default function CustomerDetails() {
                                                         <Button
                                                             variant="contained"
                                                             color="primary"
-                                                            onClick={handleStep(index+1)}
+                                                            onClick={handleStep(index + 1)}
                                                             className={classes.button}
                                                         >
                                                             {activeTask === state.tasks.length - 1 ? 'Finish' : 'Next'}
@@ -479,6 +522,60 @@ export default function CustomerDetails() {
                                             </StepContent>
                                         </Step>
                                     ))}
+
+
+
+                                    <Step
+                                        key="new"
+
+                                        completed={false}>
+                                        <StepLabel
+                                            StepIconComponent={() => { return <EditIcon /> }}
+                                        >
+                                            <Grid item xs={12} md={6} lg={4}>
+                                                <TextField
+                                                    label="Add New Event"
+                                                    // variant="outlined"
+                                                    fullWidth
+                                                    value={newTaskName}
+                                                    onChange={(e) => updateNewTaskName(e.target.value)}
+                                                    InputProps={{
+                                                        endAdornment: (
+                                                            <InputAdornment position="end">
+                                                                <Tooltip title="Add Event " arrow>
+                                                                    <IconButton edge="end" aria-label="Add" onClick={() => addToTaskList(newTaskName)}>
+                                                                        <AddCircleIcon />
+                                                                    </IconButton>
+                                                                </Tooltip>
+                                                            </InputAdornment>
+                                                        ),
+                                                    }}
+                                                />
+
+
+                                            </Grid>
+
+
+                                            {/* {task.name} */}
+
+                                        </StepLabel>
+                                        <StepContent>
+                                            {/* <Typography>{task.name}</Typography> */}
+
+
+
+
+
+
+
+
+                                        </StepContent>
+                                    </Step>
+
+
+
+
+
                                 </Stepper>
 
                             </Grid>

@@ -207,6 +207,7 @@ function App() {
 
             <Drawer
               variant="permanent"
+              
               className={clsx(classes.drawer, {
                 [classes.drawerOpen]: drawerOpen,
                 [classes.drawerClose]: !drawerOpen,
