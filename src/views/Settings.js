@@ -37,6 +37,7 @@ import "firebase/auth";
 import { FirestoreProvider, FirestoreCollection } from "@react-firebase/firestore";
 import { config } from "./../firebase";
 import { TextField, InputAdornment } from '@material-ui/core';
+import { findByPlaceholderText } from '@testing-library/react';
 
 function UpdateSettings(id, data) {
     let path = "users/" + firebase.auth().currentUser.uid + "/customers"
@@ -74,9 +75,13 @@ export default function Settings() {
     const [gotDB, setGotDB] = React.useState(false);
 
     const [newEvent, setNewEvent] = React.useState("");
+    const [newClassification, setNewClassification] = React.useState("");
+    const [newInterest, setNewInterest] = React.useState("");
 
-    function updateNewTask(value) {
-        setNewEvent(value)
+
+    const [render, setRender] = React.useState(true);
+    function doRender() {
+        setRender(!render)
     }
 
     // function handleChange(i, event) {
@@ -109,7 +114,7 @@ export default function Settings() {
 
                 if (doc.data().settings == null) {
                     console.log("No settings");
-                    tempState.settings = { events: [] }
+                    tempState.settings = { events: [], interests: [], classifications: [] }
 
 
                 }
@@ -149,6 +154,33 @@ export default function Settings() {
 
     }
 
+    function addToList(list, data) {
+        let tempState = state
+        tempState.settings[list].push(data)
+        setState(tempState)
+        UpdateSettingsField(tempState)
+        setGotDB(false)
+    }
+
+
+    function deleteFromList(list, i) {
+        let tempState = state
+        let removed = tempState.settings[list].splice(i, 1);
+        setState(tempState)
+        UpdateSettingsField(tempState)
+        setGotDB(false)
+    }
+
+    function updateListItem(list, data, i) {
+        let tempState = state
+        tempState.settings[list][i] = data
+        setState(tempState)
+        UpdateSettingsField(tempState)
+        setGotDB(false)
+    }
+
+
+
     return (
         <div className={classes.root}>
 
@@ -169,6 +201,65 @@ export default function Settings() {
                             <Card className={classes.root}>
                                 <CardContent>
                                     <Typography variant="h5" component="h5">
+                                        Default Interests
+                                    </Typography>
+                                    <List>
+                                        {state.settings.interests.map((field, idx) => {
+                                            return (
+                                                <ListItem key={idx}>
+                                                    <TextField
+                                                        label="Interest"
+                                                        value={field}
+                                                        variant="outlined"
+                                                        fullWidth
+                                                        onChange={(e) => updateListItem("interests", e.target.value, idx)}
+                                                        InputProps={{
+                                                            startAdornment: (
+                                                                <InputAdornment position="start">
+                                                                    <AssignmentTurnedInIcon />
+                                                                </InputAdornment>
+                                                            ),
+                                                        }}
+                                                    />
+                                                    <ListItemSecondaryAction>
+                                                        <IconButton edge="end" aria-label="delete" onClick={() => deleteFromList("interests",idx)}>
+                                                            <DeleteIcon />
+                                                        </IconButton>
+                                                    </ListItemSecondaryAction>
+                                                </ListItem>
+                                            );
+                                        })}
+                                        <ListItem>
+                                            <TextField
+                                                label="New Interest"
+                                                value={newInterest}
+                                                variant="outlined"
+                                                fullWidth
+                                                onChange={(e) => setNewInterest(e.target.value)}
+                                                InputProps={{
+                                                    startAdornment: (
+                                                        <InputAdornment position="start">
+                                                            <AssignmentTurnedInIcon />
+                                                        </InputAdornment>
+                                                    ),
+                                                }}
+                                            />
+                                            <ListItemSecondaryAction>
+                                                <IconButton edge="end" aria-label="Add" onClick={() => {addToList("interests", newInterest);setNewInterest("")}}>
+                                                    <AddCircleIcon />
+                                                </IconButton>
+                                            </ListItemSecondaryAction>
+                                        </ListItem>
+                                    </List>
+                                </CardContent>
+                            </Card>
+                        </Grid>
+
+                        
+                        <Grid item xs={12} md={6} lg={4}>
+                            <Card className={classes.root}>
+                                <CardContent>
+                                    <Typography variant="h5" component="h5">
                                         Default Events
                                     </Typography>
                                     <List>
@@ -180,7 +271,7 @@ export default function Settings() {
                                                         value={field}
                                                         variant="outlined"
                                                         fullWidth
-                                                        onChange={(e) => UpdateEvent(e.target.value)}
+                                                        onChange={(e) => updateListItem("events", e.target.value, idx)}
                                                         InputProps={{
                                                             startAdornment: (
                                                                 <InputAdornment position="start">
@@ -190,7 +281,7 @@ export default function Settings() {
                                                         }}
                                                     />
                                                     <ListItemSecondaryAction>
-                                                        <IconButton edge="end" aria-label="delete" onClick={() => DeleteFromEventList(idx)}>
+                                                        <IconButton edge="end" aria-label="delete" onClick={() => deleteFromList("events",idx)}>
                                                             <DeleteIcon />
                                                         </IconButton>
                                                     </ListItemSecondaryAction>
@@ -200,7 +291,7 @@ export default function Settings() {
                                         <ListItem>
                                             <TextField
                                                 label="New Event"
-                                                value={newEvent != null ? newEvent : ""}
+                                                value={newEvent}
                                                 variant="outlined"
                                                 fullWidth
                                                 onChange={(e) => setNewEvent(e.target.value)}
@@ -213,7 +304,7 @@ export default function Settings() {
                                                 }}
                                             />
                                             <ListItemSecondaryAction>
-                                                <IconButton edge="end" aria-label="delete" onClick={() => addToEventsList(newEvent)}>
+                                                <IconButton edge="end" aria-label="Add" onClick={() => {addToList("events", newEvent);setNewEvent("")}}>
                                                     <AddCircleIcon />
                                                 </IconButton>
                                             </ListItemSecondaryAction>
@@ -222,6 +313,78 @@ export default function Settings() {
                                 </CardContent>
                             </Card>
                         </Grid>
+
+                        <Grid item xs={12} md={6} lg={4}>
+                            <Card className={classes.root}>
+                                <CardContent>
+                                    <Typography variant="h5" component="h5">
+                                        Default Classifications
+                                    </Typography>
+                                    <List>
+                                        {state.settings.classifications.map((field, idx) => {
+                                            return (
+                                                <ListItem key={idx}>
+                                                    <TextField
+                                                        label="Classification"
+                                                        value={field}
+                                                        variant="outlined"
+                                                        fullWidth
+                                                        onChange={(e) => updateListItem("classifications", e.target.value, idx)}
+                                                        InputProps={{
+                                                            startAdornment: (
+                                                                <InputAdornment position="start">
+                                                                    <AssignmentTurnedInIcon />
+                                                                </InputAdornment>
+                                                            ),
+                                                        }}
+                                                    />
+                                                    <ListItemSecondaryAction>
+                                                        <IconButton edge="end" aria-label="delete" onClick={() => deleteFromList("classifications",idx)}>
+                                                            <DeleteIcon />
+                                                        </IconButton>
+                                                    </ListItemSecondaryAction>
+                                                </ListItem>
+                                            );
+                                        })}
+                                        <ListItem>
+                                            <TextField
+                                                label="New Classification"
+                                                value={newClassification}
+                                                variant="outlined"
+                                                fullWidth
+                                                onChange={(e) => setNewClassification(e.target.value)}
+                                                InputProps={{
+                                                    startAdornment: (
+                                                        <InputAdornment position="start">
+                                                            <AssignmentTurnedInIcon />
+                                                        </InputAdornment>
+                                                    ),
+                                                }}
+                                            />
+                                            <ListItemSecondaryAction>
+                                                <IconButton edge="end" aria-label="Add" onClick={() => {addToList("classifications", newClassification);setNewClassification("")}}>
+                                                    <AddCircleIcon />
+                                                </IconButton>
+                                            </ListItemSecondaryAction>
+                                        </ListItem>
+                                    </List>
+                                </CardContent>
+                            </Card>
+                        </Grid>
+
+
+
+
+
+
+
+
+
+
+                        {/* <SettingList title="Default Events" field="events" list={state.settings.events} createRef={addToList} /> */}
+
+
+
 
                         <Grid item xs={4}>
                             <Paper className={classes.paper}>...</Paper>
@@ -232,4 +395,76 @@ export default function Settings() {
                 }</div>) : (<div>loading or something</div>)}
         </div>
     );
+}
+
+
+
+
+function SettingList(title, field, list, createRef, updateRef, deleteRef) {
+
+    const [newField, setNewField] = React.useState("");
+
+    console.log(title, list)
+
+
+    return (
+        <Grid item xs={12} md={6} lg={4}>
+            <Card >
+                <CardContent>
+                    {/* <Typography variant="h5" component="h5">
+                        {title}
+                    </Typography> */}
+                    <List>
+                        {/* {list.map((field, idx) => {
+                            return (
+                                <ListItem key={idx}>
+                                    <TextField
+                                        label={idx}
+                                        value={field}
+                                        variant="outlined"
+                                        fullWidth
+                                        onChange={(e) => updateRef(e.target.value, field, idx)}
+                                        InputProps={{
+                                            startAdornment: (
+                                                <InputAdornment position="start">
+                                                    <AssignmentTurnedInIcon />
+                                                </InputAdornment>
+                                            ),
+                                        }}
+                                    />
+                                    <ListItemSecondaryAction>
+                                        <IconButton edge="end" aria-label="delete" onClick={() => deleteRef(field, idx)}>
+                                            <DeleteIcon />
+                                        </IconButton>
+                                    </ListItemSecondaryAction>
+                                </ListItem>
+                            );
+                        })} */}
+                        <ListItem>
+                            <TextField
+                                label={"Title"}
+                                value={newField}
+                                variant="outlined"
+                                fullWidth
+                                onChange={(e) => setNewField(e.target.value)}
+                                InputProps={{
+                                    startAdornment: (
+                                        <InputAdornment position="start">
+                                            <AssignmentTurnedInIcon />
+                                        </InputAdornment>
+                                    ),
+                                }}
+                            />
+                            <ListItemSecondaryAction>
+                                <IconButton edge="end" aria-label="delete" onClick={() => createRef(newField, field)}>
+                                    <AddCircleIcon />
+                                </IconButton>
+                            </ListItemSecondaryAction>
+                        </ListItem>
+                    </List>
+                </CardContent>
+            </Card>
+        </Grid>
+    )
+
 }
