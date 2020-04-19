@@ -12,6 +12,7 @@ import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemText from '@material-ui/core/ListItemText';
 import Avatar from '@material-ui/core/Avatar';
 import IconButton from '@material-ui/core/IconButton';
+import AddCircleIcon from '@material-ui/icons/AddCircle';
 import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
@@ -22,6 +23,8 @@ import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import ContactPhoneIcon from '@material-ui/icons/ContactPhone';
+import SaveIcon from '@material-ui/icons/Save';
+import Fab from '@material-ui/core/Fab';
 import {
   BrowserRouter as Router,
   Switch,
@@ -44,6 +47,14 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(2),
     textAlign: 'center',
     color: theme.palette.text.secondary,
+  },
+  extendedIcon: {
+    marginRight: theme.spacing(1),
+  },
+  fab: {
+    position: 'fixed',
+    bottom: theme.spacing(2),
+    right: theme.spacing(2),
   },
 }));
 
@@ -72,6 +83,10 @@ export default function Home() {
 
   function RouteToCUstomerDatails(id) {
     history.push("/customer_details/" + id);
+  }
+
+  function newCustomer() {
+    console.log("new customer")
   }
 
   return (
@@ -103,8 +118,8 @@ export default function Home() {
 
 
                 <List >
-                  {state.data.map((elem) =>
-                    <ListItem>
+                  {state.data.map((elem, index) =>
+                    <ListItem key={index}>
                       <ListItemAvatar>
                         <Avatar>
                           <ContactPhoneIcon />
@@ -134,34 +149,25 @@ export default function Home() {
                     </ListItem>
                   )}
 
-
-
                 </List>
-
-
 
               </CardContent>
 
             </Card>
           </Grid>
-          <Grid item xs={3}>
-            <Paper className={classes.paper}>xs=3</Paper>
+         
+          <Grid item xs={12} md={6} lg={4}>
+            <Paper className={classes.paper}>...</Paper>
           </Grid>
-          <Grid item xs={3}>
-            <Paper className={classes.paper}>xs=3</Paper>
-          </Grid>
-          <Grid item xs={3}>
-            <Paper className={classes.paper}>xs=3</Paper>
-          </Grid>
-          <Grid item xs={3}>
-            <Paper className={classes.paper}>xs=3</Paper>
-          </Grid>
+
         </Grid>
 
-
-
-
       </div>) : (<div>loading or something</div>)}
+
+      <Fab variant="extended" color="primary" className={classes.fab} disabled={false} onClick={() => newCustomer()}>
+        <AddCircleIcon className={classes.extendedIcon} />
+          New
+      </Fab>
 
 
     </div>

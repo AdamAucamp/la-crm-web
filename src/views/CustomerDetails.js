@@ -8,6 +8,7 @@ import TextField from '@material-ui/core/TextField';
 import Grid from '@material-ui/core/Grid';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
+import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import SaveIcon from '@material-ui/icons/Save';
 import Fab from '@material-ui/core/Fab';
@@ -116,7 +117,6 @@ export default function CustomerDetails() {
 
     const [state, setState] = React.useState(null);
 
-
     const [render, setRender] = React.useState(true);
     function doRender() {
         setRender(!render)
@@ -125,7 +125,6 @@ export default function CustomerDetails() {
     const [gotDB, setGotDB] = React.useState(false);
     const [edited, setEdited] = React.useState(false);
     const [activeTask, setActiveTask] = React.useState(0);
-
     const [newTaskName, setNewTaskName] = React.useState("");
 
 
@@ -133,12 +132,10 @@ export default function CustomerDetails() {
         setNewTaskName(name);
     };
 
-
     const handleStep = (step) => () => {
         setActiveTask(step);
         console.log("step ", step)
     };
-
 
     const updateState = (prop, value) => {
         setState({ ...state, [prop]: value })
@@ -146,30 +143,34 @@ export default function CustomerDetails() {
         setEdited(true)
     }
 
-    const updateTask = (field, value, i) => {
+    const updateEvent = (field, value, i) => {
         let tempState = state
-
-        tempState.tasks[i][field] = value
-        tempState.tasks[i]['modified'] = new Date().getTime()
-
+        tempState.events[i][field] = value
+        tempState.events[i]['modified'] = new Date().getTime()
         setState(tempState)
         console.log(field, value)
         setEdited(true)
         doRender()
 
     }
-    const addToTaskList = (name) => {
-
+    const addToEventList = (name) => {
         let tempState = state
-
-        tempState.tasks.push({ name: name, state: false, note: "", modified: new Date().getTime() })
-
+        tempState.events.push({ name: name, state: false, note: "", modified: new Date().getTime() })
         setState(tempState)
         console.log("new Task", name)
         setEdited(true)
-        //doRender()
+        setNewTaskName("")
+        doRender()
     }
 
+    const deleteEvent = (i) => {
+        console.log("deleting ", i)
+        let tempState = state
+        tempState.events.splice(i, 1)
+        setState(tempState)
+        setEdited(true)
+        doRender()
+    }
 
 
 
@@ -187,24 +188,21 @@ export default function CustomerDetails() {
                 console.log("Document data:", doc.data());
 
                 let tempState = doc.data()
-                if (tempState.tasks == null) {
+                if (tempState.events == null) {
 
-                    console.log("no tasks set, getting settings")
+                    console.log("no events set, getting settings")
 
                     firebase.firestore().collection("users").doc(firebase.auth().currentUser.uid).get().then(function (user) {
                         if (doc.exists) {
                             console.log("Document data:", user.data());
 
-                            let tasks = []
+                            let events = []
 
-                            user.data().settings.tasks.map((name) => {
-                                tasks.push({ name: name, state: false, note: "", modified: new Date().getTime() })
+                            user.data().settings.events.map((name) => {
+                                events.push({ name: name, state: false, note: "", modified: new Date().getTime() })
                             })
 
-
-
-
-                            tempState.tasks = tasks
+                            tempState.events = events
 
                             setState(tempState)
 
@@ -320,38 +318,7 @@ export default function CustomerDetails() {
                                 }} />
                         </Grid>
 
-                        <Grid item xs={12} md={6} lg={4}>
-                            {/* <MuiPickersUtilsProvider utils={DateFnsUtils} variant="outlined">
-                                <KeyboardDatePicker
-                                    label="Date Last Contacted"
-                                    variant="outlined"
-                                    fullWidth
-                                   
-                                    
-                                    value={new Date(state.date)}
-                                    onChange={(e) => { updateState("date", e.getTime()) }}
-                                    KeyboardButtonProps={{
-                                        'aria-label': 'change date',
-                                    }}
-                                />
-                            </MuiPickersUtilsProvider> */}
 
-                            {/* <form className={classes.container} noValidate>
-                                <TextField
-                                    type="datetime-local"
-                                    label="Date Last Contacted"
-                                    variant="outlined"
-                                    fullWidth
-
-                                    value={dateString(state.date)}
-                                    onChange={(e) => { updateState("date", new Date(e.target.value).getTime()) }}
-                                    className={classes.textField}
-                                    InputLabelProps={{
-                                        shrink: true,
-                                    }}
-                                />
-                            </form> */}
-                        </Grid>
 
 
 
@@ -371,84 +338,47 @@ export default function CustomerDetails() {
 
                         <Grid item xs={12} md={6} lg={4}>
 
-                            <Paper className={classes.paper}>Mandaat gestuur, nda gestuur,  nda terugontvang, finansiele inligting gestuur, </Paper>
+                            <Paper className={classes.paper}>... </Paper>
                         </Grid>
 
-                        <Grid item xs={12} md={6} lg={6}>
-                            {/* <Tooltip title={"Last Updated - " + (state.tick != null ? new Date(state.tick.date).toDateString() : "none")} arrow>
-                                <FormControlLabel
-                                    control={
-                                        <Checkbox
-                                            checked={state.tick != null ? state.tick.state : false}
-                                            onChange={(e) => updateState("tick", { state: e.target.checked, date: new Date().getTime(), note: (state.tick != null ? state.tick.note : "") })}
-                                            name="checkedB"
-                                            color="primary"
-                                        />
-                                    }
-                                    label="TICK"
-                                />
-                            </Tooltip>
 
-                            <TextField
-                                label="Note"
-                                multiline
-                                rows={5}
-                                value={state.tick != null ? state.tick.note : ""}
-                                onChange={(e) => updateState("tick", { state: (state.tick != null ? state.tick.state : false), date: new Date().getTime(), note: e.target.value })}
-                                variant="outlined"
-                                fullWidth
-                            /> */}
-                        </Grid>
 
 
 
                     </Grid>
 
 
-                    {/* <Grid container item spacing={3} style={{ paddingTop: 20 }} >
-                        <Grid item xs={12} md={6} >
-                            <TextField
-                                label="Note"
-                                multiline
-                                rows={10}
-                                value={state.note}
-                                onChange={(e) => updateState("note", e.target.value)}
-                                variant="outlined"
-                                fullWidth
-                            />
-                        </Grid>
-                    </Grid> */}
 
-                    {state.tasks != null &&
+                    {state.events != null &&
 
                         <Grid container item spacing={3} style={{ paddingTop: 20 }} >
                             <Grid item xs={12}  >
 
-                                {JSON.stringify(state.tasks)}
+                                {/* {JSON.stringify(state.events)} */}
 
                                 <Stepper activeStep={activeTask} orientation="vertical">
-                                    {state.tasks.map((task, index) => (
+                                    {state.events.map((event, index) => (
                                         <Step
                                             key={index}
 
-                                            completed={task.state}>
+                                            completed={event.state}>
                                             <StepLabel >
-                                                <Grid container onClick={handleStep(index)} alignItems="flex-end">
+                                                <Grid container alignItems="flex-end">
 
-                                                    <Grid item xs={12} md={6} >
+                                                    <Grid item xs={12} md={6} onClick={handleStep(index)} >
                                                         <TextField
                                                             label="Title"
                                                             // variant="outlined"
                                                             fullWidth
-                                                            value={task.name}
-                                                            onChange={(e) => updateTask("name", e.target.value, index)}
+                                                            value={event.name}
+                                                            onChange={(e) => updateEvent("name", e.target.value, index)}
                                                             InputProps={{
                                                                 endAdornment: (
                                                                     <InputAdornment position="end">
-                                                                        <Tooltip title={"Event Status: " + (task.state ? "Complete" : "Incomplete")} arrow>
+                                                                        <Tooltip title={"Event Status: " + (event.state ? "Complete" : "Incomplete")} arrow>
                                                                             <Checkbox
-                                                                                checked={task.state}
-                                                                                onChange={(e) => updateTask("state", e.target.checked, index)}
+                                                                                checked={event.state}
+                                                                                onChange={(e) => updateEvent("state", e.target.checked, index)}
                                                                                 name="Completed"
                                                                                 color="primary"
                                                                             />
@@ -460,45 +390,32 @@ export default function CustomerDetails() {
                                                     </Grid>
                                                     <Grid item xs={12} md={6} >
                                                         <Typography variant="overline" display="block" >
-                                                            Last Updated - {new Date(task.modified).toUTCString()}
+                                                            Last Updated - {new Date(event.modified).toUTCString()}
+                                                            <Tooltip title="Delete Event " arrow>
+                                                                <IconButton edge="end" aria-label="Add" onClick={() => deleteEvent(index)}>
+                                                                    <DeleteIcon />
+                                                                </IconButton>
+                                                            </Tooltip>
                                                         </Typography>
-
                                                     </Grid>
                                                 </Grid>
 
-                                                {/* {task.name} */}
+                                                {/* {event.name} */}
 
                                             </StepLabel>
                                             <StepContent>
-                                                {/* <Typography>{task.name}</Typography> */}
-
-{/* 
-                                                <Tooltip title={"Last Updated - " + (task.state != null ? new Date(task.modified).toDateString() : "none")} arrow>
-                                                    <FormControlLabel
-                                                        control={
-                                                            <Checkbox
-                                                                checked={task.state}
-                                                                onChange={(e) => updateTask("state", e.target.checked, index)}
-                                                                name="Completed"
-                                                                color="primary"
-                                                            />
-                                                        }
-                                                        label="Completed"
-                                                    />
-                                                </Tooltip> */}
+                                                {/* <Typography>{event.name}</Typography> */}
 
                                                 <TextField
                                                     label="Note"
                                                     multiline
                                                     rows={5}
-                                                    value={task.note}
-                                                    onChange={(e) => updateTask("note", e.target.value, index)}
+                                                    value={event.note}
+                                                    onChange={(e) => updateEvent("note", e.target.value, index)}
                                                     variant="outlined"
                                                     fullWidth
+
                                                 />
-
-
-
 
                                                 <div className={classes.actionsContainer}>
                                                     <div>
@@ -515,7 +432,7 @@ export default function CustomerDetails() {
                                                             onClick={handleStep(index + 1)}
                                                             className={classes.button}
                                                         >
-                                                            {activeTask === state.tasks.length - 1 ? 'Finish' : 'Next'}
+                                                            {activeTask === state.events.length - 1 ? 'Finish' : 'Next'}
                                                         </Button>
                                                     </div>
                                                 </div>
@@ -527,7 +444,6 @@ export default function CustomerDetails() {
 
                                     <Step
                                         key="new"
-
                                         completed={false}>
                                         <StepLabel
                                             StepIconComponent={() => { return <EditIcon /> }}
@@ -543,7 +459,7 @@ export default function CustomerDetails() {
                                                         endAdornment: (
                                                             <InputAdornment position="end">
                                                                 <Tooltip title="Add Event " arrow>
-                                                                    <IconButton edge="end" aria-label="Add" onClick={() => addToTaskList(newTaskName)}>
+                                                                    <IconButton edge="end" aria-label="Add" onClick={() => addToEventList(newTaskName)}>
                                                                         <AddCircleIcon />
                                                                     </IconButton>
                                                                 </Tooltip>
@@ -551,55 +467,24 @@ export default function CustomerDetails() {
                                                         ),
                                                     }}
                                                 />
-
-
                                             </Grid>
 
 
-                                            {/* {task.name} */}
+                                            {/* {event.name} */}
 
                                         </StepLabel>
                                         <StepContent>
-                                            {/* <Typography>{task.name}</Typography> */}
-
-
-
-
-
-
-
-
+                                            {/* <Typography>{event.name}</Typography> */}
                                         </StepContent>
                                     </Step>
-
-
-
-
 
                                 </Stepper>
 
                             </Grid>
-                        </Grid>}
-
-
-
-
-
-
-
-
-
+                        </Grid>
+                    }
 
                 </Grid>
-
-
-
-
-
-
-
-
-
 
 
                 <Fab variant="extended" color="primary" className={classes.fab} disabled={!edited} onClick={() => { UpdateCustomer(id, state); setEdited(false) }}>

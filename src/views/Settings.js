@@ -73,10 +73,10 @@ export default function Settings() {
     const [state, setState] = React.useState(null);
     const [gotDB, setGotDB] = React.useState(false);
 
-    const [newTask, setNewTask] = React.useState("");
+    const [newEvent, setNewEvent] = React.useState("");
 
     function updateNewTask(value) {
-        setNewTask(value)
+        setNewEvent(value)
     }
 
     // function handleChange(i, event) {
@@ -105,7 +105,16 @@ export default function Settings() {
         firebase.firestore().collection("users").doc(firebase.auth().currentUser.uid).get().then(function (doc) {
             if (doc.exists) {
                 console.log("Document data:", doc.data());
-                setState(doc.data())
+                let tempState = doc.data()
+
+                if (doc.data().settings == null) {
+                    console.log("No settings");
+                    tempState.settings = { events: [] }
+
+
+                }
+
+                setState(tempState)
 
             } else {
                 // doc.data() will be undefined in this case
@@ -114,39 +123,30 @@ export default function Settings() {
         })
     }
 
-    function AddToTaskList(data) {
+    function addToEventsList(data) {
         let tempState = state
-        tempState.settings.tasks.push(data)
+        tempState.settings.events.push(data)
 
         setState(tempState)
         UpdateSettingsField(tempState)
 
-        setNewTask("")
+        setNewEvent("")
         setGotDB(false)
     }
 
-    function RemoveFromTaskList(i) {
+    function DeleteFromEventList(i) {
         let tempState = state
-        let removed = tempState.settings.tasks.splice(i, 1);
+        let removed = tempState.settings.events.splice(i, 1);
 
         setState(tempState)
         UpdateSettingsField(tempState)
 
-        setNewTask("")
+        setNewEvent("")
         setGotDB(false)
     }
 
-    function UpdateTaskTitle(i,data){
+    function UpdateEvent(i, data) {
 
-    }
-
-
-
-
-    let history = useHistory();
-
-    function RouteToCUstomerDatails(id) {
-        history.push("/customer_details/" + id);
     }
 
     return (
@@ -154,107 +154,82 @@ export default function Settings() {
 
             {/* <FirestoreProvider {...config} firebase={firebase}>
       <FirestoreCollection path={"users/" + firebase.auth().currentUser.uid + "/customers"} >
-
       </FirestoreCollection></FirestoreProvider> */}
 
             {state !== null ? (<div>
+                {state.settings !== null &&
+                    <Grid container spacing={3}>
+                        <Grid item xs={12}>
+                            <Typography variant="h5" gutterBottom>
+                                Settings
+                            </Typography>
+                        </Grid>
 
-                <Grid container spacing={3}>
+                        <Grid item xs={12} md={6} lg={4}>
+                            <Card className={classes.root}>
+                                <CardContent>
+                                    <Typography variant="h5" component="h5">
+                                        Default Events
+                                    </Typography>
+                                    <List>
+                                        {state.settings.events.map((field, idx) => {
+                                            return (
+                                                <ListItem key={idx}>
+                                                    <TextField
+                                                        label="Event"
+                                                        value={field}
+                                                        variant="outlined"
+                                                        fullWidth
+                                                        onChange={(e) => UpdateEvent(e.target.value)}
+                                                        InputProps={{
+                                                            startAdornment: (
+                                                                <InputAdornment position="start">
+                                                                    <AssignmentTurnedInIcon />
+                                                                </InputAdornment>
+                                                            ),
+                                                        }}
+                                                    />
+                                                    <ListItemSecondaryAction>
+                                                        <IconButton edge="end" aria-label="delete" onClick={() => DeleteFromEventList(idx)}>
+                                                            <DeleteIcon />
+                                                        </IconButton>
+                                                    </ListItemSecondaryAction>
+                                                </ListItem>
+                                            );
+                                        })}
+                                        <ListItem>
+                                            <TextField
+                                                label="New Event"
+                                                value={newEvent != null ? newEvent : ""}
+                                                variant="outlined"
+                                                fullWidth
+                                                onChange={(e) => setNewEvent(e.target.value)}
+                                                InputProps={{
+                                                    startAdornment: (
+                                                        <InputAdornment position="start">
+                                                            <AssignmentTurnedInIcon />
+                                                        </InputAdornment>
+                                                    ),
+                                                }}
+                                            />
+                                            <ListItemSecondaryAction>
+                                                <IconButton edge="end" aria-label="delete" onClick={() => addToEventsList(newEvent)}>
+                                                    <AddCircleIcon />
+                                                </IconButton>
+                                            </ListItemSecondaryAction>
+                                        </ListItem>
+                                    </List>
+                                </CardContent>
+                            </Card>
+                        </Grid>
 
-                    <Grid item xs={12}>
-                        <Typography variant="h5" gutterBottom>
-                            Settings
-                    </Typography>
+                        <Grid item xs={4}>
+                            <Paper className={classes.paper}>...</Paper>
+                        </Grid>
+
                     </Grid>
 
-
-                    <Grid item xs={12} md={6} lg={4}>
-                        <Card className={classes.root}>
-                            <CardContent>
-
-                                <Typography variant="h5" component="h5">
-                                    Default Tasks
-                                </Typography>
-
-                                <List>
-
-                                    {state.settings.tasks.map((field, idx) => {
-                                        return (
-                                            <ListItem key={idx}>
-
-                                                <TextField
-                                                    label="Task"
-                                                    value={field}
-                                                    variant="outlined"
-                                                    fullWidth
-                                                    onChange={(e) => UpdateTaskTitle(e.target.value)}
-                                                    InputProps={{
-                                                        startAdornment: (
-                                                            <InputAdornment position="start">
-                                                                <AssignmentTurnedInIcon />
-                                                            </InputAdornment>
-                                                        ),
-                                                    }}
-                                                />
-
-                                                <ListItemSecondaryAction>
-                                                    <IconButton edge="end" aria-label="delete" onClick={()=>RemoveFromTaskList(idx)}>
-                                                        <DeleteIcon />
-                                                    </IconButton>
-                                                </ListItemSecondaryAction>
-                                            </ListItem>
-                                        );
-                                    })}
-                                    <ListItem>
-
-                                        <TextField
-                                            label="New Task"
-                                            value={newTask != null ? newTask : ""}
-                                            variant="outlined"
-                                            fullWidth
-                                            onChange={(e) => setNewTask(e.target.value)}
-                                            InputProps={{
-                                                startAdornment: (
-                                                    <InputAdornment position="start">
-                                                        <AssignmentTurnedInIcon />
-                                                    </InputAdornment>
-                                                ),
-                                            }}
-                                        />
-                                        <ListItemSecondaryAction>
-                                            <IconButton edge="end" aria-label="delete" onClick={() => AddToTaskList(newTask)}>
-                                                <AddCircleIcon />
-                                            </IconButton>
-                                        </ListItemSecondaryAction>
-                                    </ListItem>
-
-                                </List>
-
-                            </CardContent>
-
-                        </Card>
-                    </Grid>
-                    <Grid item xs={4}>
-                        <Paper className={classes.paper}>xs=3</Paper>
-                    </Grid>
-
-                    <Grid item xs={4}>
-                        <Paper className={classes.paper}>xs=3</Paper>
-                    </Grid>
-                    <Grid item xs={4}>
-                        <Paper className={classes.paper}>{JSON.stringify(state)}</Paper>
-                    </Grid>
-                    <Grid item xs={4}>
-                        <Paper className={classes.paper}>{JSON.stringify(state.settings.tasks)}</Paper>
-                    </Grid>
-                </Grid>
-
-
-
-
-            </div>) : (<div>loading or something</div>)}
-
-
+                }</div>) : (<div>loading or something</div>)}
         </div>
     );
 }
